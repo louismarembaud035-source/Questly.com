@@ -1,4 +1,5 @@
 import './globals.css';
+import { PlayerProvider } from './context/PlayerContext';
 
 export const metadata = {
   title: 'Questly - Life RPG',
@@ -13,7 +14,9 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="bg-slate-950 text-slate-100 antialiased">
-        {children}
+        <PlayerProvider>
+          {children}
+        </PlayerProvider>
       </body>
     </html>
   );
