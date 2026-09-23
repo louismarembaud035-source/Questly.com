@@ -1,38 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { usePlayer } from './context/PlayerContext';
 
 export default function QuestlyDashboard() {
-  const [level, setLevel] = useState(4);
-  const [xp, setXp] = useState(350);
-  const [max_xp, setMaxXp] = useState(500);
-  const [coins, setCoins] = useState(120);
-
-  const [quests, setQuests] = useState([
-    { id: 1, title: 'Ranger mon bureau', type: 'Commune', xp: 20, coins: 10, completed: false, category: 'Focus' },
-    { id: 2, title: 'Réviser 45 minutes', type: 'Rare', xp: 50, coins: 25, completed: false, category: 'Focus' },
-    { id: 3, title: 'Séance de sport (30 min)', type: 'Épique', xp: 100, coins: 50, completed: false, category: 'Énergie' },
-    { id: 4, title: 'Appeler un proche', type: 'Commune', xp: 20, coins: 10, completed: false, category: 'Social' },
-  ]);
-
-  const completeQuest = (id: number) => {
-    setQuests(quests.map(quest => {
-      if (quest.id === id && !quest.completed) {
-        setCoins(prev => prev + quest.coins);
-        setXp(prev => {
-          const newXp = prev + quest.xp;
-          if (newXp >= max_xp) {
-            setLevel(l => l + 1);
-            return newXp - max_xp;
-          }
-          return newXp;
-        });
-        return { ...quest, completed: true };
-      }
-      return quest;
-    }));
-  };
+  const { level, xp, max_xp, coins, quests, completeQuest } = usePlayer();
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 p-4 pb-28 max-w-md mx-auto flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
