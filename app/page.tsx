@@ -17,7 +17,7 @@ export default function QuestlyDashboard() {
             <div className="w-36 bg-slate-800 h-2 rounded-full mt-2 overflow-hidden p-0.5 border border-slate-700/50">
               <div 
                 className="bg-indigo-500 h-full rounded-full transition-all duration-500 shadow-sm shadow-indigo-500/50"
-                style={{ width: `${(xp / max_xp) * 100}%` }}
+                style={{ width: `${Math.min(100, (xp / max_xp) * 100)}%` }}
               ></div>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function QuestlyDashboard() {
         </section>
       </div>
 
-      {/* NAVIGATION DU BAS (Avec onglet Avatar intégré) */}
+      {/* NAVIGATION DU BAS */}
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/80 p-3 max-w-md mx-auto flex justify-around items-center shadow-2xl z-50">
         <Link href="/" className="flex flex-col items-center text-indigo-400 text-xs font-semibold tracking-wide py-1">
           Quêtes
