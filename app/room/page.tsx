@@ -10,7 +10,7 @@ function RoomScene() {
   return (
     <>
       {/* Éclairage de la scène */}
-      ambientLight intensity={0.7} />
+      <ambientLight intensity={0.7} />
       <directionalLight position={[10, 20, 15]} intensity={1.2} castShadow />
 
       {/* Sol de la chambre (Parquet) */}
@@ -81,7 +81,7 @@ function RoomScene() {
 }
 
 export default function RoomPage() {
-  const [coins, setCoins] = useState(120);
+  const [coins] = useState(120);
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 p-4 pb-28 max-w-md mx-auto flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
@@ -120,7 +120,7 @@ export default function RoomPage() {
         </section>
       </div>
 
-      {/* NAVIGATION DU BAS */}
+      {/* NAVIGATION DU BOTTOM */}
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/80 p-3 max-w-md mx-auto flex justify-around items-center shadow-2xl z-50">
         <Link href="/" className="flex flex-col items-center text-slate-400 hover:text-slate-200 text-xs font-medium tracking-wide py-1 transition-colors">
           Quêtes
