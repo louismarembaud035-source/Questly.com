@@ -23,6 +23,7 @@ interface PlayerContextType {
   addCoins: (amount: number) => void;
   spendCoins: (amount: number) => boolean;
   buyItem: (id: number, price: number) => boolean;
+  addQuest: (title: string, category: string, type: string, xp: number, coins: number) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -42,7 +43,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [quests, setQuests] = useState<Quest[]>(initialQuests);
   const [purchasedItems, setPurchasedItems] = useState<number[]>([]);
 
-  // Charger les données sauvegardées
   useEffect(() => {
     const savedCoins = localStorage.getItem('questly_coins');
     const savedLevel = localStorage.getItem('questly_level');
@@ -61,7 +61,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Sauvegarder dans le localStorage
   useEffect(() => {
     localStorage.setItem('questly_coins', coins.toString());
     localStorage.setItem('questly_level', level.toString());
@@ -92,6 +91,19 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     return false;
   };
 
+  const addQuest = (title: string, category: string, type: string, xp: number, coins: number) => {
+    const newQuest: Quest = {
+      id: Date.now(),
+      title,
+      category,
+      type,
+      xp,
+      coins,
+      completed: false,
+    };
+    setQuests(prev => [newQuest, ...prev]);
+  };
+
   const completeQuest = (id: number) => {
     setQuests(prevQuests => prevQuests.map(quest => {
       if (quest.id === id && !quest.completed) {
@@ -111,7 +123,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <PlayerContext.Provider value={{ level, xp, max_xp, coins, quests, purchasedItems, completeQuest, addCoins, spendCoins, buyItem }}>
+    <PlayerContext.Provider value={{ level, xp, max_xp, coins, quests, purchasedItems, completeQuest, addCoins, spendCoins, buyItem, addQuest }}>
       {children}
     </PlayerContext.Provider>
   );
