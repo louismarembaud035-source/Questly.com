@@ -19,6 +19,9 @@ interface PlayerContextType {
   coins: number;
   quests: Quest[];
   purchasedItems: number[];
+  focus: number;
+  energy: number;
+  social: number;
   completeQuest: (id: number) => void;
   addCoins: (amount: number) => void;
   spendCoins: (amount: number) => boolean;
@@ -42,6 +45,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [coins, setCoins] = useState(120);
   const [quests, setQuests] = useState<Quest[]>(initialQuests);
   const [purchasedItems, setPurchasedItems] = useState<number[]>([]);
+  
+  // Piliers de vie dynamiques (pourcentages de 0 à 100)
+  const [focus, setFocus] = useState(70);
+  const [energy, setEnergy] = useState(40);
+  const [social, setSocial] = useState(90);
 
   useEffect(() => {
     const savedCoins = localStorage.getItem('questly_coins');
@@ -49,10 +57,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const savedXp = localStorage.getItem('questly_xp');
     const savedQuests = localStorage.getItem('questly_quests');
     const savedPurchased = localStorage.getItem('questly_purchased');
+    const savedFocus = localStorage.getItem('questly_focus');
+    const savedEnergy = localStorage.getItem('questly_energy');
+    const savedSocial = localStorage.getItem('questly_social');
     
     if (savedCoins) setCoins(Number(savedCoins));
     if (savedLevel) setLevel(Number(savedLevel));
     if (savedXp) setXp(Number(savedXp));
+    if (savedFocus) setFocus(Number(savedFocus));
+    if (savedEnergy) setEnergy(Number(savedEnergy));
+    if (savedSocial) setSocial(Number(savedSocial));
+
     if (savedQuests) {
       try { setQuests(JSON.parse(savedQuests)); } catch (e) { console.error(e); }
     }
@@ -67,7 +82,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('questly_xp', xp.toString());
     localStorage.setItem('questly_quests', JSON.stringify(quests));
     localStorage.setItem('questly_purchased', JSON.stringify(purchasedItems));
-  }, [coins, level, xp, quests, purchasedItems]);
+    localStorage.setItem('questly_focus', focus.toString());
+    localStorage.setItem('questly_energy', energy.toString());
+    localStorage.setItem('questly_social', social.toString());
+  }, [coins, level, xp, quests, purchasedItems, focus, energy, social]);
 
   const addCoins = (amount: number) => {
     setCoins(prev => prev + amount);
@@ -116,6 +134,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
           }
           return newXp;
         });
+
+        // Augmentation dynamique des piliers selon la catégorie
+        const cat = quest.category.toLowerCase();
+        if (cat.includes('focus')) {
+          setFocus(f => Math.min(100, f + 15));
+        } else if (cat.includes('énergie') || cat.includes('energie')) {
+          setEnergy(e => Math.min(100, e + 15));
+        } else if (cat.includes('social')) {
+          setSocial(s => Math.min(100, s + 15));
+        }
+
         return { ...quest, completed: true };
       }
       return quest;
@@ -123,7 +152,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <PlayerContext.Provider value={{ level, xp, max_xp, coins, quests, purchasedItems, completeQuest, addCoins, spendCoins, buyItem, addQuest }}>
+    <PlayerContext.Provider value={{ level, xp, max_xp, coins, quests, purchasedItems, focus, energy, social, completeQuest, addCoins, spendCoins, buyItem, addQuest }}>
       {children}
     </PlayerContext.Provider>
   );
