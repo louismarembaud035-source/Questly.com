@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePlayer } from './context/PlayerContext';
 
 export default function QuestlyDashboard() {
-  const { level, xp, max_xp, coins, quests, completeQuest } = usePlayer();
+  const { level, xp, max_xp, coins, quests, focus, energy, social, completeQuest } = usePlayer();
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 p-4 pb-28 max-w-md mx-auto flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
@@ -26,35 +26,44 @@ export default function QuestlyDashboard() {
           </div>
         </header>
 
-        {/* PILIERS DE VIE */}
+        {/* PILIERS DE VIE DYNAMIQUES */}
         <section className="bg-slate-900/60 backdrop-blur-md p-5 rounded-3xl border border-slate-800/80 mb-6 shadow-xl">
           <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Piliers de vie du jour</h2>
           <div className="space-y-3">
             <div>
               <div className="flex justify-between text-xs mb-1.5 font-medium text-slate-300">
                 <span>Focus</span>
-                <span className="text-indigo-400 font-bold">70%</span>
+                <span className="text-indigo-400 font-bold">{focus}%</span>
               </div>
               <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden p-0.5 border border-slate-700/40">
-                <div className="bg-blue-500 h-full rounded-full w-[70%] shadow-sm shadow-blue-500/50"></div>
+                <div 
+                  className="bg-blue-500 h-full rounded-full transition-all duration-500 shadow-sm shadow-blue-500/50"
+                  style={{ width: `${focus}%` }}
+                ></div>
               </div>
             </div>
             <div>
               <div className="flex justify-between text-xs mb-1.5 font-medium text-slate-300">
                 <span>Énergie</span>
-                <span className="text-emerald-400 font-bold">40%</span>
+                <span className="text-emerald-400 font-bold">{energy}%</span>
               </div>
               <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden p-0.5 border border-slate-700/40">
-                <div className="bg-emerald-500 h-full rounded-full w-[40%] shadow-sm shadow-emerald-500/50"></div>
+                <div 
+                  className="bg-emerald-500 h-full rounded-full transition-all duration-500 shadow-sm shadow-emerald-500/50"
+                  style={{ width: `${energy}%` }}
+                ></div>
               </div>
             </div>
             <div>
               <div className="flex justify-between text-xs mb-1.5 font-medium text-slate-300">
                 <span>Social</span>
-                <span className="text-purple-400 font-bold">90%</span>
+                <span className="text-purple-400 font-bold">{social}%</span>
               </div>
               <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden p-0.5 border border-slate-700/40">
-                <div className="bg-purple-500 h-full rounded-full w-[90%] shadow-sm shadow-purple-500/50"></div>
+                <div 
+                  className="bg-purple-500 h-full rounded-full transition-all duration-500 shadow-sm shadow-purple-500/50"
+                  style={{ width: `${social}%` }}
+                ></div>
               </div>
             </div>
           </div>
