@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePlayer } from '../context/PlayerContext';
 
 export default function ShopPage() {
-  const { coins, spendCoins } = usePlayer();
-  const [purchased, setPurchased] = useState<number[]>([]);
+  const { coins, purchasedItems, buyItem } = usePlayer();
 
   const shopItems = [
     { id: 1, name: 'Bureau Minimaliste', price: 50, type: 'Sol' },
@@ -15,16 +14,15 @@ export default function ShopPage() {
     { id: 4, name: 'Skin Cyberpunk', price: 100, type: 'Avatar' },
   ];
 
-  const buyItem = (id: number, price: number) => {
-    if (purchased.includes(id)) {
+  const handleBuy = (id: number, price: number) => {
+    if (purchasedItems.includes(id)) {
       alert('Tu possèdes déjà cet objet !');
       return;
     }
 
-    const success = spendCoins(price);
+    const success = buyItem(id, price);
     if (success) {
-      setPurchased([...purchased, id]);
-      alert("Achat réussi ! L'objet a été ajouté à ton inventaire.");
+      alert("Achat réussi ! L'objet a été ajouté à ta chambre 3D.");
     } else {
       alert('Pas assez de pièces ! Va accomplir des quêtes pour en gagner.');
     }
@@ -37,7 +35,7 @@ export default function ShopPage() {
         <header className="flex justify-between items-center bg-slate-900/90 backdrop-blur-xl p-4 rounded-3xl border border-slate-800/80 shadow-2xl mb-6">
           <div>
             <h1 className="font-bold text-base tracking-tight">Boutique</h1>
-            <p className="text-xs text-slate-400">Dépense tes pièces gagnées</p>
+            <p className="text-xs text-slate-400">Achète des décos pour ta chambre 3D</p>
           </div>
           <div className="bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-2xl text-amber-400 font-bold text-sm tracking-wide shadow-inner">
             {coins} P
@@ -49,7 +47,7 @@ export default function ShopPage() {
           <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-1">Articles disponibles</h2>
           
           {shopItems.map(item => {
-            const isOwned = purchased.includes(item.id);
+            const isOwned = purchasedItems.includes(item.id);
             return (
               <div 
                 key={item.id}
@@ -61,7 +59,7 @@ export default function ShopPage() {
                   <div className="text-amber-400 text-xs font-bold mt-1">{item.price} P</div>
                 </div>
                 <button
-                  onClick={() => buyItem(item.id, item.price)}
+                  onClick={() => handleBuy(item.id, item.price)}
                   disabled={isOwned}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-md ${
                     isOwned 
