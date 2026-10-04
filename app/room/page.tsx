@@ -10,6 +10,7 @@ function RoomScene({ purchasedItems }: { purchasedItems: number[] }) {
   const [shirtColor, setShirtColor] = useState('#6366f1');
   const [hairColor, setHairColor] = useState('#1e293b');
 
+  // Charger les préférences du Studio Avatar
   useEffect(() => {
     const savedShirt = localStorage.getItem('questly_shirtColor');
     const savedHair = localStorage.getItem('questly_hairColor');
@@ -17,10 +18,12 @@ function RoomScene({ purchasedItems }: { purchasedItems: number[] }) {
     if (savedHair) setHairColor(savedHair);
   }, []);
 
-  // Si le skin Cyberpunk (ID: 4) est acheté, on applique un style néon
+  // Vérifier si le Skin Cyberpunk (ID: 4) est acheté
   const isCyberpunk = purchasedItems.includes(4);
-  const activeShirt = isCyberpunk ? '#06b6d4' : shirtColor;
-  const activeHair = isCyberpunk ? '#ec4899' : hairColor;
+
+  // Couleurs dynamiques selon l'achat du skin
+  const activeShirt = isCyberpunk ? '#06b6d4' : shirtColor; // Bleu néon cyberpunk
+  const activeHair = isCyberpunk ? '#ec4899' : hairColor;   // Rose néon cyberpunk
 
   return (
     <>
@@ -33,10 +36,10 @@ function RoomScene({ purchasedItems }: { purchasedItems: number[] }) {
         <meshStandardMaterial color="#334155" roughness={0.8} />
       </mesh>
 
-      {/* Mur du fond */}
+      {/* Mur du fond (Ambiance sombre si cyberpunk) */}
       <mesh position={[0, 1.5, -3]}>
         <boxGeometry args={[6, 3, 0.1]} />
-        <meshStandardMaterial color={isCyberpunk ? '#0f172a' : '#1e293b'} roughness={0.9} />
+        <meshStandardMaterial color={isCyberpunk ? '#090d16' : '#1e293b'} roughness={0.9} />
       </mesh>
 
       {/* Mur de gauche */}
@@ -45,27 +48,46 @@ function RoomScene({ purchasedItems }: { purchasedItems: number[] }) {
         <meshStandardMaterial color="#1e293b" roughness={0.9} />
       </mesh>
 
-      {/* Poster Retro (ID: 3) - Apparaît seulement si acheté */}
+      {/* Poster Retro (ID: 3) - Appareil déco */}
       {purchasedItems.includes(3) && (
         <mesh position={[1, 1.8, -2.93]}>
           <boxGeometry args={[0.8, 1, 0.05]} />
-          <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.3} />
+          <meshStandardMaterial color="#f59e0b" emissive="#d97706" emissiveIntensity={0.4} />
         </mesh>
       )}
 
-      {/* L'Avatar au centre */}
+      {/* L'AVATAR 3D */}
       <group position={[0, 0, 0]}>
+        {/* Corps (Vêtement) */}
         <mesh position={[0, 0.75, 0]}>
           <capsuleGeometry args={[0.3, 0.8, 4, 16]} />
-          <meshStandardMaterial color={activeShirt} />
+          <meshStandardMaterial 
+            color={activeShirt} 
+            emissive={isCyberpunk ? '#06b6d4' : '#000000'} 
+            emissiveIntensity={isCyberpunk ? 0.4 : 0} 
+          />
         </mesh>
+        
+        {/* Tête (Cheveux) */}
         <mesh position={[0, 1.4, 0]}>
           <sphereGeometry args={[0.25, 16, 16]} />
-          <meshStandardMaterial color={activeHair} />
+          <meshStandardMaterial 
+            color={activeHair}
+            emissive={isCyberpunk ? '#ec4899' : '#000000'} 
+            emissiveIntensity={isCyberpunk ? 0.4 : 0} 
+          />
         </mesh>
+
+        {/* Visière Cyberpunk (Visuelle si skin Cyberpunk acheté) */}
+        {isCyberpunk && (
+          <mesh position={[0, 1.4, 0.2]}>
+            <boxGeometry args={[0.35, 0.08, 0.1]} />
+            <meshStandardMaterial color="#a855f7" emissive="#c084fc" emissiveIntensity={0.8} />
+          </mesh>
+        )}
       </group>
 
-      {/* Bureau Minimaliste (ID: 1) - Apparaît seulement si acheté */}
+      {/* Bureau Minimaliste (ID: 1) */}
       {purchasedItems.includes(1) && (
         <group position={[1.5, 0, -1.5]}>
           <mesh position={[0, 0.6, 0]}>
@@ -83,15 +105,13 @@ function RoomScene({ purchasedItems }: { purchasedItems: number[] }) {
         </group>
       )}
 
-      {/* Plante Verte (ID: 2) - Apparaît seulement si achetée */}
+      {/* Plante Verte (ID: 2) */}
       {purchasedItems.includes(2) && (
         <group position={[-1.8, 0, -1.8]}>
-          {/* Pot */}
           <mesh position={[0, 0.2, 0]}>
             <cylinderGeometry args={[0.2, 0.15, 0.4]} />
             <meshStandardMaterial color="#94a3b8" />
           </mesh>
-          {/* Feuilles */}
           <mesh position={[0, 0.5, 0]}>
             <sphereGeometry args={[0.3, 12, 12]} />
             <meshStandardMaterial color="#10b981" roughness={0.6} />
@@ -114,14 +134,14 @@ export default function RoomPage() {
         <header className="flex justify-between items-center bg-slate-900/90 backdrop-blur-xl p-4 rounded-3xl border border-slate-800/80 shadow-2xl mb-6">
           <div>
             <h1 className="font-bold text-base tracking-tight">Ma Chambre 3D</h1>
-            <p className="text-xs text-slate-400">Tes achats de la boutique s'y affichent</p>
+            <p className="text-xs text-slate-400">Avatar et décors synchronisés</p>
           </div>
           <div className="bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-2xl text-amber-400 font-bold text-sm tracking-wide shadow-inner">
             {coins} P
           </div>
         </header>
 
-        {/* CONTENEUR DU CANVAS 3D */}
+        {/* CANVAS 3D */}
         <section className="bg-slate-900/60 backdrop-blur-md p-4 rounded-3xl border border-slate-800/80 mb-6 shadow-2xl">
           <div className="w-full h-80 rounded-2xl overflow-hidden border border-slate-800/80 relative shadow-inner bg-slate-950">
             <Canvas camera={{ position: [5, 4, 5], fov: 50 }}>
@@ -133,13 +153,13 @@ export default function RoomPage() {
           </div>
         </section>
 
-        {/* LIEN VERS BOUTIQUE ET AVATAR */}
+        {/* RACCOURCIS */}
         <section className="mb-6 grid grid-cols-2 gap-3">
           <Link href="/shop" className="text-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-2xl text-xs transition-all shadow-lg shadow-indigo-600/30">
-            Aller à la Boutique
+            Boutique
           </Link>
           <Link href="/avatar" className="text-center bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-semibold py-3 rounded-2xl text-xs transition-all shadow-lg">
-            Modifier Avatar
+            Studio Avatar
           </Link>
         </section>
       </div>
