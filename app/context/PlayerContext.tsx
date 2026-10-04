@@ -18,9 +18,11 @@ interface PlayerContextType {
   max_xp: number;
   coins: number;
   quests: Quest[];
+  purchasedItems: number[];
   completeQuest: (id: number) => void;
   addCoins: (amount: number) => void;
   spendCoins: (amount: number) => boolean;
+  buyItem: (id: number, price: number) => boolean;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -38,31 +40,35 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const max_xp = 500;
   const [coins, setCoins] = useState(120);
   const [quests, setQuests] = useState<Quest[]>(initialQuests);
+  const [purchasedItems, setPurchasedItems] = useState<number[]>([]);
 
+  // Charger les données sauvegardées
   useEffect(() => {
     const savedCoins = localStorage.getItem('questly_coins');
     const savedLevel = localStorage.getItem('questly_level');
     const savedXp = localStorage.getItem('questly_xp');
     const savedQuests = localStorage.getItem('questly_quests');
+    const savedPurchased = localStorage.getItem('questly_purchased');
     
     if (savedCoins) setCoins(Number(savedCoins));
     if (savedLevel) setLevel(Number(savedLevel));
     if (savedXp) setXp(Number(savedXp));
     if (savedQuests) {
-      try {
-        setQuests(JSON.parse(savedQuests));
-      } catch (e) {
-        console.error(e);
-      }
+      try { setQuests(JSON.parse(savedQuests)); } catch (e) { console.error(e); }
+    }
+    if (savedPurchased) {
+      try { setPurchasedItems(JSON.parse(savedPurchased)); } catch (e) { console.error(e); }
     }
   }, []);
 
+  // Sauvegarder dans le localStorage
   useEffect(() => {
     localStorage.setItem('questly_coins', coins.toString());
     localStorage.setItem('questly_level', level.toString());
     localStorage.setItem('questly_xp', xp.toString());
     localStorage.setItem('questly_quests', JSON.stringify(quests));
-  }, [coins, level, xp, quests]);
+    localStorage.setItem('questly_purchased', JSON.stringify(purchasedItems));
+  }, [coins, level, xp, quests, purchasedItems]);
 
   const addCoins = (amount: number) => {
     setCoins(prev => prev + amount);
@@ -71,6 +77,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const spendCoins = (amount: number): boolean => {
     if (coins >= amount) {
       setCoins(prev => prev - amount);
+      return true;
+    }
+    return false;
+  };
+
+  const buyItem = (id: number, price: number): boolean => {
+    if (purchasedItems.includes(id)) return false;
+    const success = spendCoins(price);
+    if (success) {
+      setPurchasedItems(prev => [...prev, id]);
       return true;
     }
     return false;
@@ -95,7 +111,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <PlayerContext.Provider value={{ level, xp, max_xp, coins, quests, completeQuest, addCoins, spendCoins }}>
+    <PlayerContext.Provider value={{ level, xp, max_xp, coins, quests, purchasedItems, completeQuest, addCoins, spendCoins, buyItem }}>
       {children}
     </PlayerContext.Provider>
   );
