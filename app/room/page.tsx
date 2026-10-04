@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { usePlayer } from '../context/PlayerContext';
 
 // Composant interne pour modéliser la pièce en 3D
 function RoomScene() {
@@ -81,7 +82,7 @@ function RoomScene() {
 }
 
 export default function RoomPage() {
-  const [coins] = useState(120);
+  const { coins } = usePlayer();
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 p-4 pb-28 max-w-md mx-auto flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
@@ -120,10 +121,13 @@ export default function RoomPage() {
         </section>
       </div>
 
-      {/* NAVIGATION DU BOTTOM */}
+      {/* NAVIGATION DU BAS (4 onglets unifiés) */}
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/80 p-3 max-w-md mx-auto flex justify-around items-center shadow-2xl z-50">
         <Link href="/" className="flex flex-col items-center text-slate-400 hover:text-slate-200 text-xs font-medium tracking-wide py-1 transition-colors">
           Quêtes
+        </Link>
+        <Link href="/avatar" className="flex flex-col items-center text-slate-400 hover:text-slate-200 text-xs font-medium tracking-wide py-1 transition-colors">
+          Avatar
         </Link>
         <Link href="/room" className="flex flex-col items-center text-indigo-400 text-xs font-semibold tracking-wide py-1">
           Chambre
